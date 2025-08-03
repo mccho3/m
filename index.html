@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2299.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;D3 Iris Slideshow&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://d3js.org/d3.v7.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/d3-svg-annotation@2.5.1/d3-annotation.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #f5f5f5;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>svg {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 700px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height: 500px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 8px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#tooltip {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #333;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 6px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2&gt;Iris Dataset Slideshow&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="prev"&gt;Previous&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="next"&gt;Next&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;svg id="slideshow"&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="tooltip"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const svg = d3.select("#slideshow");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const tooltip = d3.select("#tooltip");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const width = +svg.attr("width") || 700;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const height = +svg.attr("height") || 500;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>d3.csv("iris.csv").then(irisData =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>irisData.forEach(d =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>d.sepal_length = +d.sepal_length;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>d.sepal_width = +d.sepal_width;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>d.petal_length = +d.petal_length;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>d.petal_width = +d.petal_width;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const slides = [</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function slide1() {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("*").remove();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const x = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(d3.extent(irisData, d =&gt; d.sepal_length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.nice()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([40, width - 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const bins = d3.bin()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(x.domain())</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.thresholds(10)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>(irisData.map(d =&gt; d.sepal_length));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const y = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain([0, d3.max(bins, d =&gt; d.length)])</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.nice()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([height - 30, 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(0,${height - 30})`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisBottom(x));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(40,0)`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisLeft(y));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("rect")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.data(bins)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.enter()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.append("rect")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("x", d =&gt; x(d.x0))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("y", d =&gt; y(d.length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("width", d =&gt; x(d.x1) - x(d.x0) - 2)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("height", d =&gt; height - 30 - y(d.length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("fill", "steelblue")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseover", (event, d) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("display", "block")</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>.html(`Range: ${d.x0.toFixed(1)} - ${d.x1.toFixed(1)}&lt;br&gt;Count: ${d.length}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mousemove", event =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("left", (event.pageX + 10) + "px")</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>.style("top", (event.pageY - 28) + "px");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseout", () =&gt; tooltip.style("display", "none"));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.annotation().annotations([</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>note: { label: "Sepal Length Distribution", title: "Slide 1" },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>x: width / 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>y: 40,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dy: -30,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dx: 0</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>]));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>},</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function slide2() {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("*").remove();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const x = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(d3.extent(irisData, d =&gt; d.sepal_length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([40, width - 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const y = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(d3.extent(irisData, d =&gt; d.sepal_width))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([height - 30, 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(0,${height - 30})`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisBottom(x));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(40,0)`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisLeft(y));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("circle")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.data(irisData)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.enter()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.append("circle")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("cx", d =&gt; x(d.sepal_length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("cy", d =&gt; y(d.sepal_width))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("r", 4)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("fill", "tomato")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("opacity", 0.7)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseover", (event, d) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("display", "block")</p>
+<p class="p1"><span class="Apple-converted-space">                </span>.html(`Sepal L: ${d.sepal_length}&lt;br&gt;Sepal W: ${d.sepal_width}&lt;br&gt;Species: ${d.species}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mousemove", event =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("left", (event.pageX + 10) + "px")</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>.style("top", (event.pageY - 28) + "px");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseout", () =&gt; tooltip.style("display", "none"));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.annotation().annotations([</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>note: { label: "Sepal Length vs Width", title: "Slide 2" },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>x: width / 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>y: 50,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dy: -30,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dx: 0</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>]));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>},</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function slide3() {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("*").remove();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const speciesSet = Array.from(new Set(irisData.map(d =&gt; d.species)));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const avg = speciesSet.map(species =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const values = irisData.filter(d =&gt; d.species === species);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return [species, d3.mean(values, d =&gt; d.petal_length)];</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const x = d3.scaleBand()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(speciesSet)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([50, width - 30])</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.padding(0.2);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const y = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain([0, d3.max(avg, d =&gt; d[1])])</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.nice()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([height - 30, 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(0,${height - 30})`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisBottom(x));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(50,0)`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisLeft(y));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("rect")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.data(avg)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.enter()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.append("rect")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("x", d =&gt; x(d[0]))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("y", d =&gt; y(d[1]))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("width", x.bandwidth())</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("height", d =&gt; height - 30 - y(d[1]))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("fill", "darkorange")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseover", (event, d) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("display", "block")</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>.html(`Species: ${d[0]}&lt;br&gt;Avg Petal Length: ${d[1].toFixed(2)}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mousemove", event =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("left", (event.pageX + 10) + "px")</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>.style("top", (event.pageY - 28) + "px");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseout", () =&gt; tooltip.style("display", "none"));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.annotation().annotations([</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>note: { label: "Average Petal Length by Species", title: "Slide 3" },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>x: width / 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>y: 50,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dy: -30,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dx: 0</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>]));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>},</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function slide4() {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("*").remove();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const x = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(d3.extent(irisData, d =&gt; d.petal_length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([40, width - 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const y = d3.scaleLinear()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.domain(d3.extent(irisData, d =&gt; d.petal_width))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.range([height - 30, 30]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(0,${height - 30})`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisBottom(x));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("transform", `translate(40,0)`)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.axisLeft(y));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.selectAll("circle")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.data(irisData)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.enter()</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.append("circle")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("cx", d =&gt; x(d.petal_length))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("cy", d =&gt; y(d.petal_width))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("r", 4)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.attr("fill", d =&gt; d.species === "Iris-setosa" ? "mediumseagreen" : "#ccc")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseover", (event, d) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("display", "block")</p>
+<p class="p1"><span class="Apple-converted-space">                </span>.html(`Petal L: ${d.petal_length}&lt;br&gt;Petal W: ${d.petal_width}&lt;br&gt;Species: ${d.species}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mousemove", event =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>tooltip.style("left", (event.pageX + 10) + "px")</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>.style("top", (event.pageY - 28) + "px");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.on("mouseout", () =&gt; tooltip.style("display", "none"));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>svg.append("g")</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.call(d3.annotation().annotations([</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>note: { label: "Highlighting Iris-setosa", title: "Slide 4" },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>x: width / 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>y: 50,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dy: -30,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dx: 0</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>]));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>let current = 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>function renderSlide(index) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (index &gt;= 0 &amp;&amp; index &lt; slides.length) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>current = index;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>slides[current]();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>d3.select("#next").on("click", () =&gt; renderSlide(current + 1));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>d3.select("#prev").on("click", () =&gt; renderSlide(current - 1));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderSlide(current);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
