@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D3 Iris Slideshow</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-svg-annotation@2.5.1/d3-annotation.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+    }
+    svg {
+      width: 700px;
+      height: 500px;
+      background: white;
+      margin-top: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+    #tooltip {
+      position: absolute;
+      background: #333;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      pointer-events: none;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Iris Dataset Slideshow</h2>
+  <div>
+    <button id="prev">Previous</button>
+    <button id="next">Next</button>
+  </div>
+  <svg id="slideshow"></svg>
+  <div id="tooltip"></div>
+
+  <script>
+    const svg = d3.select("#slideshow");
+    const tooltip = d3.select("#tooltip");
+    const width = +svg.attr("width") || 700;
+    const height = +svg.attr("height") || 500;
+
+    d3.csv("iris.csv").then(irisData => {
+      irisData.forEach(d => {
+        d.sepal_length = +d.sepal_length;
+        d.sepal_width = +d.sepal_width;
+        d.petal_length = +d.petal_length;
+        d.petal_width = +d.petal_width;
+      });
+
+      const slides = [
+        function slide1() {
+          svg.selectAll("*").remove();
+
+          const x = d3.scaleLinear()
+            .domain(d3.extent(irisData, d => d.sepal_length))
+            .nice()
+            .range([40, width - 30]);
+
+          const bins = d3.bin()
+            .domain(x.domain())
+            .thresholds(10)
+            (irisData.map(d => d.sepal_length));
+
+          const y = d3.scaleLinear()
+            .domain([0, d3.max(bins, d => d.length)])
+            .nice()
+            .range([height - 30, 30]);
+
+          svg.append("g")
+            .attr("transform", `translate(0,${height - 30})`)
+            .call(d3.axisBottom(x));
+
+          svg.append("g")
+            .attr("transform", `translate(40,0)`)
+            .call(d3.axisLeft(y));
+
+          svg.selectAll("rect")
+            .data(bins)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d.x0))
+            .attr("y", d => y(d.length))
+            .attr("width", d => x(d.x1) - x(d.x0) - 2)
+            .attr("height", d => height - 30 - y(d.length))
+            .attr("fill", "steelblue")
+            .on("mouseover", (event, d) => {
+              tooltip.style("display", "block")
+                     .html(`Range: ${d.x0.toFixed(1)} - ${d.x1.toFixed(1)}<br>Count: ${d.length}`);
+            })
+            .on("mousemove", event => {
+              tooltip.style("left", (event.pageX + 10) + "px")
+                     .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", () => tooltip.style("display", "none"));
+
+          svg.append("g")
+            .call(d3.annotation().annotations([
+              {
+                note: { label: "Sepal Length Distribution", title: "Slide 1" },
+                x: width / 2,
+                y: 40,
+                dy: -30,
+                dx: 0
+              }
+            ]));
+        },
+
+        function slide2() {
+          svg.selectAll("*").remove();
+
+          const x = d3.scaleLinear()
+            .domain(d3.extent(irisData, d => d.sepal_length))
+            .range([40, width - 30]);
+
+          const y = d3.scaleLinear()
+            .domain(d3.extent(irisData, d => d.sepal_width))
+            .range([height - 30, 30]);
+
+          svg.append("g")
+            .attr("transform", `translate(0,${height - 30})`)
+            .call(d3.axisBottom(x));
+
+          svg.append("g")
+            .attr("transform", `translate(40,0)`)
+            .call(d3.axisLeft(y));
+
+          svg.selectAll("circle")
+            .data(irisData)
+            .enter()
+            .append("circle")
+            .attr("cx", d => x(d.sepal_length))
+            .attr("cy", d => y(d.sepal_width))
+            .attr("r", 4)
+            .attr("fill", "tomato")
+            .attr("opacity", 0.7)
+            .on("mouseover", (event, d) => {
+              tooltip.style("display", "block")
+                .html(`Sepal L: ${d.sepal_length}<br>Sepal W: ${d.sepal_width}<br>Species: ${d.species}`);
+            })
+            .on("mousemove", event => {
+              tooltip.style("left", (event.pageX + 10) + "px")
+                     .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", () => tooltip.style("display", "none"));
+
+          svg.append("g")
+            .call(d3.annotation().annotations([
+              {
+                note: { label: "Sepal Length vs Width", title: "Slide 2" },
+                x: width / 2,
+                y: 50,
+                dy: -30,
+                dx: 0
+              }
+            ]));
+        },
+
+        function slide3() {
+          svg.selectAll("*").remove();
+
+          const speciesSet = Array.from(new Set(irisData.map(d => d.species)));
+
+          const avg = speciesSet.map(species => {
+            const values = irisData.filter(d => d.species === species);
+            return [species, d3.mean(values, d => d.petal_length)];
+          });
+
+          const x = d3.scaleBand()
+            .domain(speciesSet)
+            .range([50, width - 30])
+            .padding(0.2);
+
+          const y = d3.scaleLinear()
+            .domain([0, d3.max(avg, d => d[1])])
+            .nice()
+            .range([height - 30, 30]);
+
+          svg.append("g")
+            .attr("transform", `translate(0,${height - 30})`)
+            .call(d3.axisBottom(x));
+
+          svg.append("g")
+            .attr("transform", `translate(50,0)`)
+            .call(d3.axisLeft(y));
+
+          svg.selectAll("rect")
+            .data(avg)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d[0]))
+            .attr("y", d => y(d[1]))
+            .attr("width", x.bandwidth())
+            .attr("height", d => height - 30 - y(d[1]))
+            .attr("fill", "darkorange")
+            .on("mouseover", (event, d) => {
+              tooltip.style("display", "block")
+                     .html(`Species: ${d[0]}<br>Avg Petal Length: ${d[1].toFixed(2)}`);
+            })
+            .on("mousemove", event => {
+              tooltip.style("left", (event.pageX + 10) + "px")
+                     .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", () => tooltip.style("display", "none"));
+
+          svg.append("g")
+            .call(d3.annotation().annotations([
+              {
+                note: { label: "Average Petal Length by Species", title: "Slide 3" },
+                x: width / 2,
+                y: 50,
+                dy: -30,
+                dx: 0
+              }
+            ]));
+        },
+
+        function slide4() {
+          svg.selectAll("*").remove();
+
+          const x = d3.scaleLinear()
+            .domain(d3.extent(irisData, d => d.petal_length))
+            .range([40, width - 30]);
+
+          const y = d3.scaleLinear()
+            .domain(d3.extent(irisData, d => d.petal_width))
+            .range([height - 30, 30]);
+
+          svg.append("g")
+            .attr("transform", `translate(0,${height - 30})`)
+            .call(d3.axisBottom(x));
+
+          svg.append("g")
+            .attr("transform", `translate(40,0)`)
+            .call(d3.axisLeft(y));
+
+          svg.selectAll("circle")
+            .data(irisData)
+            .enter()
+            .append("circle")
+            .attr("cx", d => x(d.petal_length))
+            .attr("cy", d => y(d.petal_width))
+            .attr("r", 4)
+            .attr("fill", d => d.species === "Iris-setosa" ? "mediumseagreen" : "#ccc")
+            .on("mouseover", (event, d) => {
+              tooltip.style("display", "block")
+                .html(`Petal L: ${d.petal_length}<br>Petal W: ${d.petal_width}<br>Species: ${d.species}`);
+            })
+            .on("mousemove", event => {
+              tooltip.style("left", (event.pageX + 10) + "px")
+                     .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", () => tooltip.style("display", "none"));
+
+          svg.append("g")
+            .call(d3.annotation().annotations([
+              {
+                note: { label: "Highlighting Iris-setosa", title: "Slide 4" },
+                x: width / 2,
+                y: 50,
+                dy: -30,
+                dx: 0
+              }
+            ]));
+        }
+      ];
+
+      let current = 0;
+      function renderSlide(index) {
+        if (index >= 0 && index < slides.length) {
+          current = index;
+          slides[current]();
+        }
+      }
+
+      d3.select("#next").on("click", () => renderSlide(current + 1));
+      d3.select("#prev").on("click", () => renderSlide(current - 1));
+      renderSlide(current);
+    });
+  </script>
+</body>
+</html>
