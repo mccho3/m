@@ -76,6 +76,10 @@
             .nice()
             .range([height - 30, 30]);
 
+          const color = d3.scaleSequential()
+            .domain([0, bins.length])
+            .interpolator(d3.interpolateBlues);
+
           svg.append("g")
             .attr("transform", `translate(0,${height - 30})`)
             .call(d3.axisBottom(x));
@@ -84,6 +88,7 @@
             .attr("transform", `translate(40,0)`)
             .call(d3.axisLeft(y));
 
+          
           svg.selectAll("rect")
             .data(bins)
             .enter()
