@@ -223,7 +223,7 @@
 
           const color = d3.scaleSequential()
             .domain([0, bins.length])
-            .interpolator(d3.interpolateRgb("#ffb6c1", "#ff1493"));
+            .interpolator(d3.interpolateBlues);
 
           svg.append("g")
             .attr("transform", `translate(0,${height - 30})`)
