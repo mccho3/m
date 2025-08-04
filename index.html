@@ -222,8 +222,8 @@
             .range([height - 30, 30]);
 
           const color = d3.scaleSequential()
-            .domain([0, bins.length])
-            .interpolator(d3.interpolateBlues);
+            .domain([0, maxLength])
+            .interpolator(d3.interpolateReds);
 
           svg.append("g")
             .attr("transform", `translate(0,${height - 30})`)
