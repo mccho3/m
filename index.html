@@ -92,7 +92,7 @@
             .attr("y", d => y(d.length))
             .attr("width", d => x(d.x1) - x(d.x0) - 2)
             .attr("height", d => height - 30 - y(d.length))
-            .attr("fill", "steelblue")
+            .attr("fill", (d, i) => color(i))
             .on("mouseover", (event, d) => {
               tooltip.style("display", "block")
                      .html(`Range: ${d.x0.toFixed(1)} - ${d.x1.toFixed(1)}<br>Count: ${d.length}`);
@@ -102,6 +102,8 @@
                      .style("top", (event.pageY - 28) + "px");
             })
             .on("mouseout", () => tooltip.style("display", "none"));
+
+          
 
           svg.append("g")
             .call(d3.annotation().annotations([
@@ -172,7 +174,7 @@
               {
                 note: { label: "Sepal Length vs Width", title: "" },
                 x: width / 2,
-                y: 50,
+                y: 60,
                 dy: -6,
                 dx: 0
               }
@@ -246,7 +248,7 @@
               {
                 note: { label: "Average Petal Length by Species", title: "" },
                 x: width / 2,
-                y: 50,
+                y: 60,
                 dy: -6,
                 dx: 0
               }
