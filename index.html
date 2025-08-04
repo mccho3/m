@@ -345,67 +345,89 @@
           .text("Petal Width (cm)");
         },
         function slide5() {
-          svg.selectAll("*").remove();
-        
-          const x = d3.scaleLinear()
-            .domain(d3.extent(irisData, d => d.sepal_length))
-            .nice()
-            .range([40, width - 30]);
-        
-          const y = d3.scaleLinear()
-            .domain(d3.extent(irisData, d => d.petal_length))
-            .nice()
-            .range([height - 30, 30]);
-        
-          svg.append("g")
-            .attr("transform", `translate(0,${height - 30})`)
-            .call(d3.axisBottom(x))
-            .append("text")
-            .attr("x", width - 100)
-            .attr("y", -6)
-            .attr("fill", "black")
-            .style("text-anchor", "end")
-            .text("Sepal Length");
-        
-          svg.append("g")
-            .attr("transform", `translate(40,0)`)
-            .call(d3.axisLeft(y))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -40)
-            .attr("y", 15)
-            .attr("fill", "black")
-            .style("text-anchor", "end")
-            .text("Petal Length");
-        
-          svg.selectAll("circle")
-            .data(irisData)
-            .enter()
-            .append("circle")
-            .attr("cx", d => x(d.sepal_length))
-            .attr("cy", d => y(d.petal_length))
-            .attr("r", 4)
-            .attr("fill", "mediumpurple")
-            .attr("opacity", 0.7)
-            .on("mouseover", (event, d) => {
-              tooltip.style("display", "block")
-                .html(`Sepal L: ${d.sepal_length}<br>Petal L: ${d.petal_length}<br>Species: ${d.species}`);
-            })
-            .on("mousemove", event => {
-              tooltip.style("left", (event.pageX + 10) + "px")
-                     .style("top", (event.pageY - 28) + "px");
-            })
-            .on("mouseout", () => tooltip.style("display", "none"));
-        
-          svg.append("g")
-            .call(d3.annotation().annotations([{
-              note: { label: "Sepal vs Petal Length", title: "Slide 5" },
-              x: width / 2,
-              y: 40,
-              dy: -30,
-              dx: 0
-            }]));
-        }
+        svg.selectAll("*").remove();
+      
+        const margin = { top: 40, right: 30, bottom: 50, left: 60 };
+        const plotWidth = width - margin.left - margin.right;
+        const plotHeight = height - margin.top - margin.bottom;
+      
+        const x = d3.scaleLinear()
+          .domain(d3.extent(irisData, d => d.sepal_length))
+          .nice()
+          .range([margin.left, margin.left + plotWidth]);
+      
+        const y = d3.scaleLinear()
+          .domain(d3.extent(irisData, d => d.petal_length))
+          .nice()
+          .range([margin.top + plotHeight, margin.top]);
+      
+        // X axis
+        svg.append("g")
+          .attr("transform", `translate(0,${margin.top + plotHeight})`)
+          .call(d3.axisBottom(x));
+      
+        // Y axis
+        svg.append("g")
+          .attr("transform", `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y));
+      
+        // X axis label
+        svg.append("text")
+          .attr("x", margin.left + plotWidth / 2)
+          .attr("y", height - 10)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "14px")
+          .text("Sepal Length (cm)");
+      
+        // Y axis label
+        svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -margin.top - plotHeight / 2)
+          .attr("y", 15)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "14px")
+          .text("Petal Length (cm)");
+      
+        // Title
+        svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", 25)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("font-weight", "bold")
+          .text("Comparison: Sepal Length vs Petal Length");
+      
+        // Points
+        svg.selectAll("circle")
+          .data(irisData)
+          .enter()
+          .append("circle")
+          .attr("cx", d => x(d.sepal_length))
+          .attr("cy", d => y(d.petal_length))
+          .attr("r", 4)
+          .attr("fill", "mediumorchid")
+          .attr("opacity", 0.7)
+          .on("mouseover", (event, d) => {
+            tooltip.style("display", "block")
+              .html(`Sepal L: ${d.sepal_length}<br>Petal L: ${d.petal_length}<br>Species: ${d.species}`);
+          })
+          .on("mousemove", event => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                   .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", () => tooltip.style("display", "none"));
+      
+        // Annotation
+        svg.append("g")
+          .call(d3.annotation().annotations([{
+            note: { label: "Sepal vs Petal Length", title: "Slide 5" },
+            x: width / 2,
+            y: 50,
+            dy: -6,
+            dx: 0
+          }]));
+      }
+
 
       ];
 
