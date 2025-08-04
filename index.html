@@ -307,7 +307,7 @@
             .attr("cx", d => x(d.petal_length))
             .attr("cy", d => y(d.petal_width))
             .attr("r", 4)
-            .attr("fill", d => d.species === "Iris-setosa" ? "mediumseagreen" : "#ccc")
+            .attr("fill", d => d.species === "Iris-setosa" ? "purple" : "#ccc")
             .on("mouseover", (event, d) => {
               tooltip.style("display", "block")
                 .html(`Petal L: ${d.petal_length}<br>Petal W: ${d.petal_width}<br>Species: ${d.species}`);
