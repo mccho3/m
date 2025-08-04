@@ -372,22 +372,20 @@
           .call(d3.axisLeft(y));
       
         // X axis label
-        svg.append("text")
-          .attr("x", margin.left + plotWidth / 2)
-          .attr("y", height - 10)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "14px")
-          .text("Sepal Length (cm)");
-      
-        // Y axis label
-        svg.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("x", -margin.top - plotHeight / 2)
-          .attr("y", 15)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "14px")
-          .text("Petal Length (cm)");
-      
+            svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", height - 5)
+      .attr("text-anchor", "middle")
+      .text("Sepal Length (cm)");
+    
+    // Y axis label (Match previous slides)
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 15)
+      .attr("x", -height / 2)
+      .attr("text-anchor", "middle")
+      .text("Petal Length (cm)");
+          
         // Title
         svg.append("text")
           .attr("x", width / 2)
@@ -423,7 +421,7 @@
             note: { label: "Sepal vs Petal Length", title: "Slide 5" },
             x: width / 2,
             y: 50,
-            dy: -6,
+            dy: 0,
             dx: 0
           }]));
       }
