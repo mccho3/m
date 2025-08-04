@@ -221,6 +221,10 @@
             .nice()
             .range([height - 30, 30]);
 
+          const color = d3.scaleSequential()
+            .domain([0, bins.length])
+            .interpolator(d3.interpolateRgb("#ffb6c1", "#ff1493"));
+
           svg.append("g")
             .attr("transform", `translate(0,${height - 30})`)
             .call(d3.axisBottom(x));
@@ -237,7 +241,7 @@
             .attr("y", d => y(d[1]))
             .attr("width", x.bandwidth())
             .attr("height", d => height - 30 - y(d[1]))
-            .attr("fill", "pink")
+            .attr("fill", (d, i) => color(i))
             .on("mouseover", (event, d) => {
               tooltip.style("display", "block")
                      .html(`Species: ${d[0]}<br>Avg Petal Length: ${d[1].toFixed(2)}`);
