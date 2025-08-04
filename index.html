@@ -113,6 +113,20 @@
                 dx: 0
               }
             ]));
+
+          svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height - 5)
+            .attr("text-anchor", "middle")
+            .text("Sepal Length (cm)");
+          
+          // Y-axis label
+          svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 15)
+            .attr("x", -height / 2)
+            .attr("text-anchor", "middle")
+            .text("Count");
         },
 
         function slide2() {
@@ -163,6 +177,21 @@
                 dx: 0
               }
             ]));
+
+          // X-axis label
+          svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height - 5)
+            .attr("text-anchor", "middle")
+            .text("Sepal Length (cm)");
+          
+          // Y-axis label
+          svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 15)
+            .attr("x", -height / 2)
+            .attr("text-anchor", "middle")
+            .text("Sepal Width (cm)");
         },
 
         function slide3() {
@@ -222,6 +251,21 @@
                 dx: 0
               }
             ]));
+
+          // X-axis label
+          svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height - 5)
+            .attr("text-anchor", "middle")
+            .text("Species");
+          
+          // Y-axis label
+          svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 15)
+            .attr("x", -height / 2)
+            .attr("text-anchor", "middle")
+            .text("Avg Petal Length (cm)");
         },
 
         function slide4() {
@@ -271,6 +315,21 @@
                 dx: 0
               }
             ]));
+
+          // X-axis label
+        svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", height - 5)
+          .attr("text-anchor", "middle")
+          .text("Petal Length (cm)");
+        
+        // Y-axis label
+        svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 15)
+          .attr("x", -height / 2)
+          .attr("text-anchor", "middle")
+          .text("Petal Width (cm)");
         }
       ];
 
