@@ -323,7 +323,7 @@
               {
                 note: { label: "Petal length vs petal width", title: "" },
                 x: width / 2,
-                y: 70,
+                y: 80,
                 dy: -6,
                 dx: 0
               }
@@ -340,6 +340,14 @@
               }
             ]));
 
+          svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", 25)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .text("Petal Length vs Petal Width");
+
+          
           // X-axis label
         svg.append("text")
           .attr("x", width / 2)
@@ -414,7 +422,7 @@
           .attr("cy", d => y(d.petal_length))
           .attr("r", 4)
           .attr("fill", "mediumorchid")
-          .attr("fill", d => d.species === "Iris-virginica" ? "green" : "#ccc")
+          .attr("fill", d => d.species === "Iris-setosa" ? "mediumorchid" : "#ccc")
           .attr("opacity", 0.7)
           .on("mouseover", (event, d) => {
             tooltip.style("display", "block")
@@ -429,9 +437,9 @@
         // Annotation
         svg.append("g")
           .call(d3.annotation().annotations([{
-            note: { label: "Iris-virginica", title: "" },
-            x: width / 2,
-            y: 70,
+            note: { label: "Iris-setosa", title: "" },
+            x: 60,
+            y: 400,
             dy: 0,
             dx: 0
           }]));
